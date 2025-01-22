@@ -1,13 +1,36 @@
-import tailwind from "@astrojs/tailwind";
-import compress from "astro-compress";
+import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
+import netlify from "@astrojs/netlify";
+import robotsTxt from "astro-robots-txt";
+import UnoCSS from "@unocss/astro";
 import icon from "astro-icon";
-import { defineConfig } from 'astro/config';
 
-import vercel from "@astrojs/vercel/serverless";
+import solidJs from "@astrojs/solid-js";
+import { remarkReadingTime } from "./src/lib/remark-reading-time.mjs";
+
+import svelte from "@astrojs/svelte";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), icon(), compress()],
-  output: "server",
-  adapter: vercel()
+  site: "https://yussef432.github.io/",
+  integrations: [
+    sitemap(),
+    robotsTxt({
+      sitemap: [
+        "https://yussef432.github.io/sitemap-index.xml",
+        "https://yussef432.github.io/sitemap-0.xml",
+      ],
+    }),
+    solidJs(),
+    UnoCSS({ injectReset: true }),
+    icon(),
+    svelte(),
+  ],
+  markdown: {
+    remarkPlugins: [remarkReadingTime],
+  },
+  adapter: netlify({ edgeMiddleware: true }),
+  vite: {
+    assetsInclude: "**/*.riv",
+  },
 });
